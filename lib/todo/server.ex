@@ -1,4 +1,4 @@
-defmodule TodoServer do
+defmodule Todo.Server do
 	use GenServer
 
 	def start do
@@ -7,7 +7,7 @@ defmodule TodoServer do
 
 	@impl GenServer
 	def init(_) do
-		{:ok, TodoList.new()}
+		{:ok, Todo.List.new()}
 	end
 
 	def entries(date),
@@ -24,22 +24,22 @@ defmodule TodoServer do
 
 	@impl GenServer
 	def handle_call({:entries, date}, _, todo_list) do
-		entries = TodoList.entries(todo_list, date)
+		entries = Todo.List.entries(todo_list, date)
 		{:reply, entries, todo_list}
 	end
 
 	@impl GenServer
 	def handle_cast({:add_entry, new_entry}, todo_list) do
-		{:noreply, TodoList.add_entry(todo_list, new_entry)}
+		{:noreply, Todo.List.add_entry(todo_list, new_entry)}
 	end
 
 	@impl GenServer
 	def handle_cast({:update_entry, updated_entry}, todo_list) do
-		{:noreply, TodoList.update_entry(todo_list, updated_entry)}
+		{:noreply, Todo.List.update_entry(todo_list, updated_entry)}
 	end
 
 	@impl GenServer
 	def handle_cast({:delete_entry, entry_id}, todo_list) do
-		{:noreply, TodoList.delete_entry(todo_list, entry_id)}
+		{:noreply, Todo.List.delete_entry(todo_list, entry_id)}
 	end
 end

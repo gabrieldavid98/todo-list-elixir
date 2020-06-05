@@ -1,10 +1,10 @@
-defmodule TodoList do
+defmodule Todo.List do
 	defstruct auto_id: 1, entries: %{}
 
 	def new(entries \\ []) do
 		Enum.reduce(
 			entries,
-			%TodoList{},
+			%Todo.List{},
 			&add_entry(&2, &1)
 		)
 	end
@@ -16,7 +16,7 @@ defmodule TodoList do
 
 		new_entries = Map.put(todo_list.entries, todo_list.auto_id, entry)
 
-		%TodoList{
+		%Todo.List{
 			todo_list |
 			entries: new_entries,
 			auto_id: todo_list.auto_id + 1
@@ -40,12 +40,12 @@ defmodule TodoList do
 				old_entry_id = old_entry.id
 				new_entry = %{id: ^old_entry_id} = updater_fun.(old_entry)
 				new_entries = Map.put(todo_list.entries, new_entry.id, new_entry)
-				%TodoList{todo_list | entries: new_entries}
+				%Todo.List{todo_list | entries: new_entries}
 		end
 	end
 
 	def delete_entry(todo_list, entry_id) do
-		%TodoList{
+		%Todo.List{
 			todo_list |
 			entries: Map.delete(todo_list.entries, entry_id)
 		}
@@ -57,7 +57,7 @@ defmodule TodoList.CsvImporter do
 		file_name
 		|> read_lines()
 		|> create_entries()
-		|> TodoList.new()
+		|> Todo.List.new()
 	end
 
 	defp read_lines(file_name) do
@@ -97,13 +97,13 @@ defmodule TodoList.CsvImporter do
 	end
 end
 
-defimpl Collectable, for: TodoList do
+defimpl Collectable, for: Todo.List do
 	def into(original) do
 		{original, &into_callback/2}
 	end
 
 	defp into_callback(todo_list, {:cont, entry}) do
-		TodoList.add_entry(todo_list, entry)
+		Todo.List.add_entry(todo_list, entry)
 	end
 
 	defp into_callback(todo_list, :done), do: todo_list
