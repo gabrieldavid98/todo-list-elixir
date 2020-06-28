@@ -1,9 +1,9 @@
 defmodule Todo.Server do
-	use GenServer
+	use GenServer, restart: :temporary
 
 	def start_link(name) do
 		IO.puts("Starting to-do server for #{name}")
-		GenServer.start_link(__MODULE__, name)
+		GenServer.start_link(__MODULE__, name, name: via_tuple(name))
 	end
 
 	@impl GenServer
@@ -46,5 +46,9 @@ defmodule Todo.Server do
 	def handle_cast({:delete_entry, entry_id}, {name, todo_list}) do
 		new_list = Todo.List.delete_entry(todo_list, entry_id)
 		{:noreply, {name, new_list}}
+	end
+
+	defp via_tuple(name) do
+		Todo.ProcessRegistry.via_tuple({__MODULE__, name})
 	end
 end
